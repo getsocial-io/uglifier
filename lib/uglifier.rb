@@ -159,9 +159,16 @@ class Uglifier
   # Run UglifyJS for given source code
   def run_uglifyjs(input, generate_map)
     source = read_source(input)
+    source.gsub!('<%', '/*').gsub!('%>', '*/').gsub!('"/*=', '"<%=').gsub!('*/"', '%>"').gsub!("'/*=", "'<%=").gsub!("*/'", "%>'")
+
+    puts source
+
+    comp_otions = output_options
+    comp_otions[:comments] = :all
+ 
     options = {
       :source => source,
-      :output => output_options,
+      :output => comp_otions,
       :compress => compressor_options,
       :mangle_names => mangle_names_options,
       :mangle_properties => mangle_properties_options,
@@ -335,3 +342,5 @@ class Uglifier
     nil
   end
 end
+
+puts Uglifier.new.compile(File.read("test.js"))
