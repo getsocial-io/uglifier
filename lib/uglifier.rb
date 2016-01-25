@@ -136,7 +136,10 @@ class Uglifier
       compiled + "\n//# sourceMappingURL=data:#{source_map_mime},#{source_map_uri}"
     else
       compiled = run_uglifyjs(source, false)
-      compiled = compiled.gsub('f("', '<%').gsub('a"),', '%>').gsub('a")', '%>')
+
+      if source.start_with?("//GsAsync")
+        compiled = compiled.gsub('f("', '<%').gsub('a"),', '%>').gsub('a")', '%>')
+      end
     
       return compiled
     end
@@ -163,9 +166,11 @@ class Uglifier
   def run_uglifyjs(input, generate_map)
     source = read_source(input)
 
-    source = source.gsub('<%', '/*').gsub('%>', '*/').gsub('"/*=', '"<%=').gsub('*/"', '%>"').gsub("'/*=", "'<%=").gsub("*/'", "%>'")
-    source = source.gsub('/*', 'f("').gsub('*/', '" + "a")')
-    
+    if source.start_with?("//GsAsync")
+      source = source.gsub('<%', '/*').gsub('%>', '*/').gsub('"/*=', '"<%=').gsub('*/"', '%>"').gsub("'/*=", "'<%=").gsub("*/'", "%>'")
+      source = source.gsub('/*', 'f("').gsub('*/', '" + "a")')
+    end
+
     options = {
       :source => source,
       :output => output_options,
