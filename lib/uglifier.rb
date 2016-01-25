@@ -135,7 +135,8 @@ class Uglifier
       source_map_mime = "application/json;charset=utf-8;base64"
       compiled + "\n//# sourceMappingURL=data:#{source_map_mime},#{source_map_uri}"
     else
-      run_uglifyjs(source, false)
+      compiled = run_uglifyjs(source, false)
+      return compiled.gsub!('f("', '<%').gsub!('a"),', '%>').gsub!('a")', '%>')
     end
   end
   alias_method :compress, :compile
@@ -160,15 +161,11 @@ class Uglifier
   def run_uglifyjs(input, generate_map)
     source = read_source(input)
     source.gsub!('<%', '/*').gsub!('%>', '*/').gsub!('"/*=', '"<%=').gsub!('*/"', '%>"').gsub!("'/*=", "'<%=").gsub!("*/'", "%>'")
+    source.gsub!('/*', 'f("').gsub!('*/', '" + "a")')
 
-    puts source
-
-    comp_otions = output_options
-    comp_otions[:comments] = :all
- 
     options = {
       :source => source,
-      :output => comp_otions,
+      :output => output_options,
       :compress => compressor_options,
       :mangle_names => mangle_names_options,
       :mangle_properties => mangle_properties_options,
@@ -342,5 +339,3 @@ class Uglifier
     nil
   end
 end
-
-puts Uglifier.new.compile(File.read("test.js"))
