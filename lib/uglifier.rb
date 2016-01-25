@@ -138,7 +138,7 @@ class Uglifier
       compiled = run_uglifyjs(source, false)
 
       if source.start_with?("//GsAsync")
-        compiled = compiled.gsub('f("', '<%').gsub('a"),', '%>').gsub('a")', '%>')
+        compiled = compiled.gsub('f("', '<%').gsub('a"),', '%>').gsub('a")', '%>').gsub(',;', ';')
       end
     
       return compiled
@@ -347,3 +347,5 @@ class Uglifier
     nil
   end
 end
+
+puts Uglifier.new.compile(File.read("test.js"))
