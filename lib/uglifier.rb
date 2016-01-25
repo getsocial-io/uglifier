@@ -347,5 +347,3 @@ class Uglifier
     nil
   end
 end
-
-puts Uglifier.new.compile(File.read("test.js"))
