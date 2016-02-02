@@ -139,6 +139,16 @@ class Uglifier
 
       if source.start_with?("//GsAsync")
         compiled = compiled.gsub(',f(" if', ';<% if').gsub(',f("', '<%').gsub('a"),', '%>').gsub('a")', '%>').gsub('f("=', '<%=')
+
+        scans = compiled.scan(/\%\>[a-zA-Z]+:/)
+
+        if scans
+          scans.each do |s|
+            to_replace = s.split('>').last
+
+            compiled = compiled.gsub(to_replace, ",#{to_replace}")
+          end
+        end
       end
     
       return compiled
